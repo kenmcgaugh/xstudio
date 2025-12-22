@@ -30,7 +30,7 @@ if(WIN32)
   add_definitions(-DUUID_SYSTEM_GENERATOR=ON)
 endif()
 
-set(STUDIO_PLUGINS "" CACHE STRING "Enable compilation of SITE plugins")
+set(STUDIO_PLUGINS "weta" CACHE STRING "Enable compilation of SITE plugins")
 
 if (("${CMAKE_GENERATOR}" MATCHES "Makefiles" OR ("${CMAKE_GENERATOR}" MATCHES "Ninja" AND NOT WIN32)) AND NOT __CHECKED_CXX_FLAGS)
   set(__CHECKED_CXX_FLAGS TRUE CACHE INTERNAL "Whether we checked the CXX flags already")
