@@ -4,6 +4,7 @@
 from xstudio.plugin import HUDPlugin
 from xstudio.core import JsonStore, ColourTriplet
 from xstudio.core import AttributeRole
+from xstudio.core import KeyboardModifier
 import json
 import sys
 from os import path
@@ -38,9 +39,9 @@ class ViewportFieldChart(HUDPlugin):
 
         # A json that is a list of the charts provided with this plugin
         # that can be toggled on or off
-        uri = pathlib.Path("{0}/{1}".format(cdir, "qml/mkt_anim_grid.svg")).as_uri()
+        uri = pathlib.Path("{0}/{1}".format(cdir, "qml/qc_grid.svg")).as_uri()
         self.default_charts = {
-            "Anim Grid 1": str(uri)
+            "QC Grid": str(uri)
             }
 
         # this attr holds the list of charts that has been toggled on to be
@@ -48,7 +49,7 @@ class ViewportFieldChart(HUDPlugin):
         # of the charts persists between sessions for the user
         self.charts_visibility = self.add_attribute(
             "Visibile Charts",
-            ["Anim Grid 1"],
+            ["QC Grid"],
             register_as_preference=True)
         self.charts_visibility.expose_in_ui_attrs_group(["fieldchart_image_set"])
 
@@ -110,6 +111,20 @@ class ViewportFieldChart(HUDPlugin):
         self.connect_to_ui()
 
         self.attribute_changed(self.charts_visibility, AttributeRole.Value)
+
+        self.shortcut_id = self.register_hotkey(
+            self.toggle,
+            "G",
+            KeyboardModifier.AltModifier,
+            "Toggle Visibility",
+            "Toggle visibility of the active field charts.",
+            auto_repeat=False,
+            component="Field Charts",
+            context=None)
+
+    def toggle(self, is_press, context):
+        if not is_press: return
+        self.toggle_attr.set_value(not self.toggle_attr.value())
 
     def attribute_changed(self, attr, role):
 
