@@ -277,11 +277,12 @@ QModelIndexList SessionModel::copyRows(
 
                             JSONTreeModel::insertRows(insertion_row, 1, parent, insertion_json);
 
-                            anon_mail(
+                            request_receive<JsonStore>(
+                                *sys,
+                                pactor,
                                 timeline::insert_item_atom_v,
                                 insertion_row,
-                                UuidActorVector({actor_uuid}))
-                                .send(pactor);
+                                UuidActorVector({actor_uuid}));
 
                             result.push_back(index(insertion_row, 0, parent));
 
