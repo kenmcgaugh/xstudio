@@ -811,9 +811,18 @@ OIIOMediaReader::thumbnail(const media::AVFrameID &mpr, const size_t thumb_size)
         std::string path = uri_to_posix_path(mpr.uri());
 
         // Step 2: Open the image buffer.
-        OIIO::ImageBuf imagebuf(path);
+        auto config = OIIO::ImageSpec();
+        config.attribute("raw:thumbnail_sort", 1); // sort the thumbnails by size
+        config.attribute("raw:thumbnail_index", 0); // choose smallest thumbnail
+        OIIO::ImageBuf imagebuf(path, 0, 0, {}, &config);
         if (imagebuf.has_error()) {
             throw media_corrupt_error("OIIO error: " + imagebuf.geterror());
+        }
+
+        // use embedded thumbnail if it exists
+        if (imagebuf.has_thumbnail()) {
+            imagebuf = *imagebuf.get_thumbnail();
+            spdlog::debug("Found embedded thumbnail: {}", path);
         }
 
         auto stream_id = mpr.stream_id();
@@ -1051,6 +1060,7 @@ OIIOMediaReader::supported(const caf::uri &uri, const std::array<uint8_t, 16> &s
                         in->close();
                         result = possible;
                     }
+                    OIIO::geterror(); // clear any errors
                 }
             } else
                 result = from_string(value);
