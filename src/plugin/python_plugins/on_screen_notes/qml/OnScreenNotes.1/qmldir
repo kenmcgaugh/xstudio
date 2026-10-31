@@ -1,0 +1,3 @@
+module OnScreenNotes
+
+OnScreenNotesOverlay 1.0 OnScreenNotesOverlay.qml
